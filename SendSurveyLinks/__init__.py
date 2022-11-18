@@ -33,20 +33,25 @@ def main(mytimer: func.TimerRequest) -> None:
     users_item_pages = user_table_client.list_entities()
 
     for user in users_item_pages:
-        survey_data = {
-            "PartitionKey": user.get("RowKey"),
-            "RowKey": str(uuid.uuid4()),
-            "HaveImagesBeenGenerated": False,
-            "Response": '',
-            "Img": '',
-            "SurveyState": 1,
-            "Timestamp": datetime.now()
-        }
-        entity = survey_table_client.create_entity(entity=survey_data)
-        message = twilio_client.messages.create(
-                                            body=f"Good evening. This is your daily reflection reminder from eMote. Please use this link to fill out your self reflection survey: {SURVEY_BASE_URL}/?sID={survey_data.get('RowKey')}&uID={survey_data.get('PartitionKey')}",
-                                            from_=TWILIO_PHONE_NUMBER,
-                                            to=user.get("phone")
-                                        )
+        logging.info(user.get("phone"))
+        try:
+            survey_data = {
+                "PartitionKey": user.get("RowKey"),
+                "RowKey": str(uuid.uuid4()),
+                "HaveImagesBeenGenerated": False,
+                "Response": '',
+                "Img": '',
+                "SurveyState": 1,
+                "Timestamp": datetime.now()
+            }
+            entity = survey_table_client.create_entity(entity=survey_data)
+            message = twilio_client.messages.create(
+                                                body=f"Hello! This is your daily reflection reminder from eMote. Please use this link to fill out your self reflection survey: {SURVEY_BASE_URL}/?sID={survey_data.get('RowKey')}&uID={survey_data.get('PartitionKey')}&g={user.get('PartitionKey')}",
+                                                from_=TWILIO_PHONE_NUMBER,
+                                                to=user.get("phone")
+                                            )
+        except:
+            logging.info("Error when sending message to")
+            logging.info(user.get("phone"))
 
     logging.info('Python timer trigger function ran at %s', datetime.now())

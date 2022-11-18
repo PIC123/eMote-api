@@ -16,7 +16,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     req_body = req.get_json()
 
     table_service_client = TableServiceClient.from_connection_string(conn_str=STORAGE_CONN_STRING)
-    table_client = table_service_client.get_table_client(table_name="Surveys")
+    table_client = table_service_client.get_table_client(table_name=req_body.get("tableName"))
 
     try:
         entry = table_client.get_entity(row_key=req_body.get("surveyID"), partition_key=req_body.get("userID"))
