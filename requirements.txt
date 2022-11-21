@@ -6,3 +6,5 @@ azure-functions
 azure-data-tables
 twilio
 openai
+Pillow
+azure-storage-blob
